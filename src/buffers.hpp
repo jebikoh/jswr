@@ -2,12 +2,36 @@
 
 #include <vector>
 #include <cstdint>
-#include <jtxlib/simd/avxfloat.hpp>
 #include <jtxlib/math/vec2.hpp>
 #include <jtxlib/math/vec3.hpp>
 
 namespace jswr {
+    struct Color {
+        uint8_t r, g, b, a;
 
+        explicit Color(uint8_t r=0, uint8_t g=0, uint8_t b=0, uint8_t a=255) : r(r), g(g), b(b), a(a) {};
+    };
+
+    class FrameBuffer {
+    public:
+        int width, height;
+        std::vector<Color> colorBuffer;
+        std::vector<float> depthBuffer;
+
+        FrameBuffer(int width, int height) : width(width), height(height) {
+            colorBuffer.resize(width * height);
+            depthBuffer.resize(width * height);
+        }
+
+        // TODO: AVX2 optimization
+        // TODO: Parallelize
+        void clear(const Color& color) {
+            for (int i = 0; i < width * height; i++) {
+                colorBuffer[i] = color;
+                depthBuffer[i] = 0.0f;
+            }
+        }
+    };
 
 //    // This buffer has a 8x on component-wise operations (e.g. applying a transformation to all vertices)
 //    // Unfortunately, this doesn't fit very well with a tile-based rasterizer.

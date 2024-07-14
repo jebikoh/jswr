@@ -1,5 +1,4 @@
 #pragma once
-#include <jtxlib/simd/avxfloat.hpp>
 #include <vector>
 #include <cstdint>
 #include "jtxlib/math/vec2.hpp"

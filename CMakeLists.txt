@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(jswr VERSION 1.0.0 LANGUAGES CXX)
+project(jswr VERSION 1.0.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -12,15 +12,28 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build" FORCE)
 endif()
 
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory(ext/glfw)
+
+include_directories(ext/glad/include)
+
 add_subdirectory(ext/jtxlib)
 
 add_executable(jswr src/main.cpp
         src/camera.hpp
         src/model.cpp
         src/model.hpp
-        src/buffers.hpp)
+        src/buffers.hpp
+        src/shader.hpp
+        src/rasterizer.hpp
+        src/renderer.hpp
+        src/glad.c
+        src/renderer.cpp
+)
 
-target_link_libraries(jswr PRIVATE jtxlib)
+target_link_libraries(jswr PRIVATE jtxlib glfw)
 
 target_include_directories(jswr
         PRIVATE
