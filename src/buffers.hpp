@@ -22,11 +22,11 @@ namespace jswr {
 
         // Add vertex to buffer (only really used by model importer)
         void addVertex(const jtx::Vec3f& pos, const jtx::Vec3f& norm, const jtx::Vec2f& uv_) {
-            if (num_vertices % 8 == 0) {
+            auto avx_lane = num_vertices % 8;
+            if (avx_lane == 0) {
                 position.emplace_back();
                 normal.emplace_back();
             }
-            int avx_lane = num_vertices % 8;
             position.back().x[avx_lane] = pos.x;
             position.back().y[avx_lane] = pos.y;
             position.back().z[avx_lane] = pos.z;
@@ -40,11 +40,11 @@ namespace jswr {
 
         void addVertex(float x, float y, float z, float nx, float ny, float nz, float u, float v) {
             // Create new AVX struct if we need to
-            if (num_vertices % 8 == 0) {
+            auto avx_lane = num_vertices % 8;
+            if (avx_lane == 0) {
                 position.emplace_back();
                 normal.emplace_back();
             }
-            int avx_lane = num_vertices % 8;
             position.back().x[avx_lane] = x;
             position.back().y[avx_lane] = y;
             position.back().z[avx_lane] = z;
