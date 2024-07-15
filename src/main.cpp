@@ -1,5 +1,6 @@
 #include <iostream>
-#include "jtxlib/math.hpp"
+#include <jtxlib/math/mat4.hpp>
+#include <jtxlib/math/transform.hpp>
 #include "renderer.hpp"
 #include "model.hpp"
 
@@ -8,10 +9,7 @@ std::string toString(const jtx::Vec3f &v) {
 }
 
 int main() {
-    jswr::Model model;
-    jswr::loadModel("../assets/cube/cube.obj", model);
-
-    std::cout << "Model has " << model.meshes.size() << " meshes" << std::endl;
+    auto m4lookAt = jtx::lookAt(jtx::Vec3f)
 
     return 0;
 }
