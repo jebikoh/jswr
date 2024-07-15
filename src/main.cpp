@@ -1,13 +1,15 @@
 #include <iostream>
 #include "jtxlib/math.hpp"
 #include "renderer.hpp"
+#include "model.hpp"
+
+std::string toString(const jtx::Vec3f &v) {
+    return "(" + std::to_string(v.x) + ", " + std::to_string(v.y) + ", " + std::to_string(v.z) + ")";
+}
 
 int main() {
-    jswr::Renderer renderer(800, 600, "JSWR");
-
-    while (!renderer.shouldClose()) {
-        renderer.render();
-    }
+    jswr::Model model;
+    jswr::loadModel("../assets/cube/cube.obj", model);
 
     return 0;
 }

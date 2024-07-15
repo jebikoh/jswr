@@ -45,7 +45,7 @@ namespace jswr {
             material->GetTexture(type, i, &str);
             bool loaded = false;
             for (uint32_t j = 0; j < textures.size(); ++j) {
-                if (std::strcmp(model.textureBuffer[j].path.data(), str.C_Str()) == 0) {
+                if (model.textureBuffer[j].path == str.C_Str()) {
                     textures.push_back(j);
                     loaded = true;
                     break;
@@ -62,6 +62,8 @@ namespace jswr {
                     return false;
                 }
                 tex.data = std::vector<uint8_t>(data, data + width * height * channels);
+                stbi_image_free(data);
+
                 tex.width = width;
                 tex.height = height;
                 tex.channels = channels;
@@ -99,18 +101,25 @@ namespace jswr {
         return true;
     }
 
-    static Mesh processMesh(aiMesh *mesh, Model &model, const aiScene *scene, jtx::Mat4 &transform) {
+    static void processMesh(aiMesh *mesh, Model &model, const aiScene *scene, jtx::Mat4 &transform) {
         Mesh m;
-        m.vertex_offset = static_cast<uint32_t>(model.vertexBuffer.size());
-        m.index_offset = static_cast<uint32_t>(model.indexBuffer.size());
+        m.vertex_offset = static_cast<size_t>(model.vertexBuffer.size());
+        m.index_offset = static_cast<size_t>(model.indexBuffer.size());
         m.model_matrix = transform;
-        m.material_id = mesh->mMaterialIndex;
+        if (mesh->mMaterialIndex >= 0 && mesh->mMaterialIndex < model.materials.size()) {
+            m.material_id = mesh->mMaterialIndex;
+        } else {
+            std::cerr << "Warning: Invalid material index for mesh" << std::endl;
+            m.material_id = 0;
+        }
 
         // Process vertices
         for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
             Vertex v;
             v.position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
-            v.normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
+            if (mesh->HasNormals()) {
+                v.normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
+            }
             if (mesh->mTextureCoords[0]) {
                 v.uv = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
             } else {
@@ -131,15 +140,14 @@ namespace jswr {
         m.num_vertices = mesh->mNumVertices;
         m.index_count = static_cast<uint32_t>(model.indexBuffer.size() - m.index_offset);
 
-        return m;
+        model.meshes.emplace_back(m);
     }
 
     static void processNode(aiNode *node, const aiScene *scene, Model &model, const jtx::Mat4 &pTransform) {
         jtx::Mat4 transform = pTransform * aiMatrix4x4ToMat4(node->mTransformation);
 
         for (unsigned int i = 0; i < node->mNumMeshes; ++i) {
-            aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-            processMesh(mesh, model, scene, transform);
+            processMesh(scene->mMeshes[node->mMeshes[i]], model, scene, transform);
         }
 
         for (unsigned int i = 0; i < node->mNumChildren; ++i) {
@@ -149,7 +157,11 @@ namespace jswr {
 
     bool loadModel(const char *path, Model &model) {
         Assimp::Importer importer;
-        const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals);
+        const aiScene *scene = importer.ReadFile(path,
+                                                 aiProcess_Triangulate |
+                                                 aiProcess_FlipUVs |
+                                                 aiProcess_GenNormals |
+                                                 aiProcess_JoinIdenticalVertices);
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
             std::cerr << "Error: " << importer.GetErrorString() << std::endl;
