@@ -17,6 +17,11 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(ext/glfw)
 
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+add_subdirectory(ext/assimp)
+
 include_directories(ext/glad/include)
 
 add_subdirectory(ext/jtxlib)
@@ -33,12 +38,13 @@ add_executable(jswr src/main.cpp
         src/renderer.cpp
 )
 
-target_link_libraries(jswr PRIVATE jtxlib glfw)
+target_link_libraries(jswr PRIVATE jtxlib glfw assimp)
 
 target_include_directories(jswr
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/ext/jtxlib/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/ext/stb
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
