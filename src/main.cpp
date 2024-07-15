@@ -11,5 +11,7 @@ int main() {
     jswr::Model model;
     jswr::loadModel("../assets/cube/cube.obj", model);
 
+    std::cout << "Model has " << model.meshes.size() << " meshes" << std::endl;
+
     return 0;
 }
