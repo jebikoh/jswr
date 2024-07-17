@@ -1,6 +1,7 @@
 #pragma once
 
 #include <buffers.hpp>
+#include "model.hpp"
 
 namespace jswr {
     class Rasterizer {
@@ -15,6 +16,8 @@ namespace jswr {
         FrameBuffer &getFrameBuffer() {
             return frameBuffer;
         }
+
+        void draw(const Model &model);
 
     private:
         int width, height;

@@ -25,12 +25,7 @@ namespace jswr {
         ~Camera() = default;
 
         [[nodiscard]] jtx::Mat4 getViewMatrix() const {
-            return {
-                right.x, right.y, right.z, -jtx::dot(right, position),
-                vup.x, vup.y, vup.z, -jtx::dot(vup, position),
-                -direction.x, -direction.y, -direction.z, jtx::dot(direction, position),
-                0.0f, 0.0f, 0.0f, 1.0f
-            };
+            return jtx::lookAt(right, vup, direction, position);
         }
 
         void update() {

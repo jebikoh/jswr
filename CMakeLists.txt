@@ -40,6 +40,7 @@ add_executable(jswr src/main.cpp
         src/renderer.hpp
         src/glad.c
         src/renderer.cpp
+        src/rasterizer.cpp
 )
 target_link_libraries(jswr PRIVATE jtxlib glfw assimp)
 target_include_directories(jswr
