@@ -1,13 +1,9 @@
 #include "rasterizer.hpp"
+#include "camera.hpp"
 
 namespace jswr {
-    void Rasterizer::draw(const Model &model) {
-        // Vertex Shader
-
-        // Clipping
-
-        // Rasterization
-
-        // Fragment Shader
+    template<typename Uniform, typename Varying>
+    void Rasterizer<Uniform, Varying>::draw(const Model &model, const Camera &camera) {
+        // Vertex shader
     }
 }

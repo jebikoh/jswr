@@ -3,25 +3,24 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "buffers.hpp"
-#include "rasterizer.hpp"
 
 namespace jswr {
-    class Renderer {
+    class Display {
     public:
-        Renderer(int width, int height, const char *title) : width(width), height(height), rasterizer(width, height) { // NOLINT(*-pro-type-member-init)
+        Display(int width, int height, const char *title) : width(width), height(height) { // NOLINT(*-pro-type-member-init)
             setupWindow(title);
             setupVAO();
             setupShaders();
             setupTexture();
         }
 
-        ~Renderer() {
+        ~Display() {
             glDeleteTextures(1, &texture);
             glfwDestroyWindow(window);
             glfwTerminate();
         }
 
-        void render();
+        void swap(const FrameBuffer &frameBuffer);
 
         bool shouldClose() {
             return glfwWindowShouldClose(window);
@@ -30,7 +29,6 @@ namespace jswr {
     private:
         int width, height;
         GLFWwindow *window;
-        Rasterizer rasterizer;
 
         GLuint VAO, VBO, EBO;
         GLuint texture;
@@ -44,4 +42,5 @@ namespace jswr {
 
         void setupWindow(const char *title);
     };
-}
+
+} // jswr

@@ -1,6 +1,7 @@
-#include "renderer.hpp"
+#include "display.hpp"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <stdexcept>
 
 // Quad vertices
 const float vertices[] = {
@@ -37,7 +38,7 @@ void main() {
 )";
 
 namespace jswr {
-    void Renderer::setupVAO() {
+    void Display::setupVAO() {
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
         glGenBuffers(1, &EBO);
@@ -59,7 +60,7 @@ namespace jswr {
         glBindVertexArray(0);
     }
 
-    void Renderer::setupShaders() {
+    void Display::setupShaders() {
         GLuint vs = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vs, 1, &vsSource, nullptr);
         glCompileShader(vs);
@@ -77,7 +78,7 @@ namespace jswr {
         glDeleteShader(fs);
     }
 
-    void Renderer::setupTexture() {
+    void Display::setupTexture() {
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -86,7 +87,7 @@ namespace jswr {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     }
 
-    void Renderer::setupWindow(const char *title) {
+    void Display::setupWindow(const char *title) {
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -101,13 +102,8 @@ namespace jswr {
         gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     }
 
-    void Renderer::render() {
-        rasterizer.clear(Color(255, 99, 71, 255));
-
-        // Draw stuff!
-        // Not here yet
-
-        const auto &colorBuffer = rasterizer.getFrameBuffer().colorBuffer;
+    void Display::swap(const FrameBuffer &frameBuffer) {
+        const auto &colorBuffer = frameBuffer.colorBuffer;
         glBindTexture(GL_TEXTURE_2D, this->texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, colorBuffer.data());
 
@@ -125,4 +121,4 @@ namespace jswr {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-}
+} // jswr
